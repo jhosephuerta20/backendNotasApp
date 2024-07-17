@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  labels:
+    build: ./Notas
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: jdbc:postgresql://BDExamenDoc:5432/BDExamen?createDatabaseIfNotExist=true&serverTimezone=UTC
+      DB_USER: postgres
+      DB_PASSWORD: 12345
+    restart: always
+    depends_on:
+      - BDExamenDoc
+
+  BDExamenDoc:
+    image: postgres:16.3
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: BDExamen
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
